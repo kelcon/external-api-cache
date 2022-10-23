@@ -25,6 +25,8 @@ module.exports = ( options ) => {
     }
   };
 
+  console.log(JSON.stringify(options));
+
   /* Current Weather from OpenWeatherAPI's OneCall) */
 
   if (typeof options.owa_onecall !== "undefined") {
@@ -38,12 +40,16 @@ module.exports = ( options ) => {
       weather.current.visibility  = Math.round(options.owa_onecall.current.visibility);   
 
       weather.current.one_hour_precipitation = false;
+
+      if (typeof options.owa_onecall.minutely !== "undefined") {
+        options.owa_onecall.minutely.forEach( minuteData => {
+          if (minuteData.precipitation > 0) {
+            weather.one_hour_precipitation = true;
+          }
+        })       
+      }
       
-      options.owa_onecall.minutely.forEach( minuteData => {
-        if (minuteData.precipitation > 0) {
-          weather.one_hour_precipitation = true;
-        }
-      })
+
   }
 
   /* Hourly Weather from OpenWeatherAPI's OneCall */
@@ -87,7 +93,7 @@ module.exports = ( options ) => {
       weather.current.wind_gust   = typeof options.owa_weather.wind.gust !== "undefined" ? Math.round(options.owa_weather.wind.gust) : Math.round(options.owa_weather.wind.speed); 
       weather.current.visibility  = Math.round(options.owa_weather.visibility); 
 
-      weather.current.one_hour_precipitation = (typeof options.owa_weather.snow !== "undefined" && typeof options.owa_weather.snow['1h'] !== "undefined") || (typeof options.owa_weather.rain  !== "undefined" && typeof options.owa_weather.data.rain['1h'] !== "undefined");
+      weather.current.one_hour_precipitation = (typeof options.owa_weather.snow !== "undefined" && typeof options.owa_weather.snow['1h'] !== "undefined") || (typeof options.owa_weather.rain  !== "undefined" && typeof options.owa_weather.rain['1h'] !== "undefined");
 
   }
 
